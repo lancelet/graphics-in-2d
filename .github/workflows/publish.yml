@@ -42,18 +42,10 @@ jobs:
           ~/.ghcup/bin/ghcup install ghc 8.10.5
           ~/.ghcup/bin/ghcup install cabal
 
-      - name: Compile diagrams package
-        run: |
-          mkdir -p doc/img
-          pushd imagegen
-          cabal build
-          cabal run
-          popd
-
       - name: Install asciidoctor
         run: sudo apt-get install asciidoctor
 
-      - name: Convert asciidoc to HTML
+      - name: Create documentation
         run: ./build.sh
 
       - name: Deploy to GitHub Pages
