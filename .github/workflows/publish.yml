@@ -41,7 +41,8 @@ jobs:
           if [[ ! -f '/usr/local/.ghcup/bin/ghcup' ]]; then
             curl --proto '=https' --tlsv1.2 -sSf https://get-ghcup.haskell.org | sh
           fi
-          ghcup install ghc 8.10.5
+          ghcup install ghc 8.10.4
+          ghcup set ghc 8.10.4
           ghcup install cabal
           cabal update
 
