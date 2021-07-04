@@ -1,2 +1,11 @@
 = 2D Graphics Algorithms
 Jonathan Merritt <j.s.merritt@gmail.com>
+:stem: latexmath
+
+Test SVG image:
+
+image::img/square.svg[Static,400]
+
+Test equation for stem:[x] and stem:[y]:
+
+stem:[y = mx + c]

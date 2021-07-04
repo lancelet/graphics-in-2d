@@ -32,4 +32,4 @@ executable imagegen
     build-depends:
         diagrams-core ^>=1.5.0
       , diagrams-lib  ^>=1.4.4
-      --, diagrams-svg  ^>=1.4.3
+      , diagrams-svg  ^>=1.4.3

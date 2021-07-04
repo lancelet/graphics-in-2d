@@ -43,8 +43,10 @@ jobs:
 
       - name: Compile diagrams package
         run: |
+          mkdir -p doc/img
           pushd imagegen
           cabal build
+          cabal run
           popd
 
       - name: Install asciidoctor
