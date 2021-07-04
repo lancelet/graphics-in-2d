@@ -44,6 +44,7 @@ jobs:
 
       - name: Lint Haskell
         run: |
+          echo "$(which cabal)"
           cabal install cabal-fmt hspretty
           pushd imagegen
           hspretty check
