@@ -29,7 +29,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: |
-            ~/.ghcup
+            /usr/local/.ghcup
             ~/.cabal/store
             imagegen/dist-newstyle
           key: ${{ runner.os }}
@@ -38,9 +38,12 @@ jobs:
 
       - name: Install GHC toolchain
         run: |
-          curl --proto '=https' --tlsv1.2 -sSf https://get-ghcup.haskell.org | sh
-          ~/.ghcup/bin/ghcup install ghc 8.10.5
-          ~/.ghcup/bin/ghcup install cabal
+          if [[ ! -f '/usr/local/.ghcup/bin/ghcup' ]]; then
+            curl --proto '=https' --tlsv1.2 -sSf https://get-ghcup.haskell.org | sh
+          fi
+          ghcup install ghc 8.10.5
+          ghcup install cabal
+          cabal update
 
       - name: Lint Haskell
         run: |
