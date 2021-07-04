@@ -42,6 +42,13 @@ jobs:
           ~/.ghcup/bin/ghcup install ghc 8.10.5
           ~/.ghcup/bin/ghcup install cabal
 
+      - name: Lint Haskell
+        run: |
+          cabal install hspretty
+          pushd imagegen
+          hspretty check
+          popd
+
       - name: Install asciidoctor
         run: sudo apt-get install asciidoctor
 
