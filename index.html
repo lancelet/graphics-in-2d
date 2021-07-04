@@ -446,12 +446,53 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div id="content">
-
+<div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>Test SVG image:</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="img/square.svg" alt="Static" width="400">
+</div>
+</div>
+<div class="paragraph">
+<p>Test equation for \(x\) and \(y\):</p>
+</div>
+<div class="paragraph">
+<p>\(y = mx + c\)</p>
+</div>
+</div>
+</div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2021-07-04 06:16:10 UTC
+Last updated 2021-07-04 06:40:08 UTC
 </div>
 </div>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  messageStyle: "none",
+  tex2jax: {
+    inlineMath: [["\\(", "\\)"]],
+    displayMath: [["\\[", "\\]"]],
+    ignoreClass: "nostem|nolatexmath"
+  },
+  asciimath2jax: {
+    delimiters: [["\\$", "\\$"]],
+    ignoreClass: "nostem|noasciimath"
+  },
+  TeX: { equationNumbers: { autoNumber: "none" } }
+})
+MathJax.Hub.Register.StartupHook("AsciiMath Jax Ready", function () {
+  MathJax.InputJax.AsciiMath.postfilterHooks.Add(function (data, node) {
+    if ((node = data.script.parentNode) && (node = node.parentNode) && node.classList.contains('stemblock')) {
+      data.math.root.display = "block"
+    }
+    return data
+  })
+})
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_HTMLorMML"></script>
 </body>
 </html>
