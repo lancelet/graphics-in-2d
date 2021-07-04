@@ -44,7 +44,7 @@ jobs:
 
       - name: Lint Haskell
         run: |
-          cabal install hspretty
+          cabal install cabal-fmt hspretty
           pushd imagegen
           hspretty check
           popd
