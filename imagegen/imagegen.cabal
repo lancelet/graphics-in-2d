@@ -1,10 +1,8 @@
 cabal-version:      2.4
 name:               imagegen
 version:            0.1.0.0
-
 synopsis:           Algorithmic image generation.
-description:
-  Generates images for the text on 2D graphics.
+description:        Generates images for the text on 2D graphics.
 license:            BSD-3-Clause
 author:             Jonathan Merritt
 maintainer:         j.s.merritt@gmail.com
@@ -26,10 +24,10 @@ common ghc-options
     -Wincomplete-uni-patterns -Wredundant-constraints
 
 executable imagegen
-    import:           base, ghc-options
-    main-is:          Main.hs
-    hs-source-dirs:   app
-    build-depends:
-        diagrams-core ^>=1.5.0
-      , diagrams-lib  ^>=1.4.4
-      , diagrams-svg  ^>=1.4.3
+  import:         base, ghc-options
+  main-is:        Main.hs
+  hs-source-dirs: app
+  build-depends:
+    , diagrams-core  ^>=1.5.0
+    , diagrams-lib   ^>=1.4.4
+    , diagrams-svg   ^>=1.4.3

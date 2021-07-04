@@ -1,7 +1,7 @@
 module Main where
 
-import Diagrams.Prelude
 import Diagrams.Backend.SVG
+import Diagrams.Prelude
 
 b1 :: Diagram B
 b1 = square 20 # lw 0.002 # fc blue
