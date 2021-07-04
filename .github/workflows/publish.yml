@@ -51,7 +51,7 @@ jobs:
           echo "$(which cabal)"
           cabal install cabal-fmt hspretty
           pushd imagegen
-          hspretty check
+          PATH="$PATH":/home/runner/.cabal/bin hspretty check
           popd
 
       - name: Install asciidoctor
