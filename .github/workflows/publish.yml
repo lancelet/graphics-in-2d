@@ -61,7 +61,7 @@ jobs:
         run: sudo apt-get install pdf2svg
 
       - name: Install texlive
-        run: sudo apt-get install texlive
+        run: sudo apt-get install texlive texlive-latex-recommended
 
       - name: Create documentation
         run: ./build.sh
