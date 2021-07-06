@@ -30,4 +30,18 @@ executable imagegen
   build-depends:
     , diagrams-core  ^>=1.5.0
     , diagrams-lib   ^>=1.4.4
+    , diagrams-pgf   ^>=1.4.1.1
     , diagrams-svg   ^>=1.4.3
+    , imagegen
+
+library
+  import:          base, ghc-options
+  hs-source-dirs:  src
+  exposed-modules: AnalyticAntialias
+  build-depends:
+    , colour            ^>=2.3.6
+    , diagrams-contrib  ^>=1.4.4
+    , diagrams-core     ^>=1.5.0
+    , diagrams-lib      ^>=1.4.4
+    , diagrams-pgf      ^>=1.4.1.1
+    , diagrams-svg      ^>=1.4.3

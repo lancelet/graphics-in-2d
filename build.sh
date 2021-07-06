@@ -13,6 +13,19 @@ cabal build
 cabal run
 popd
 
+echo 'Converting images'
+pushd doc/img
+for file in *.pdf; do
+  base="${file%.*}"
+  cropped="${base}-crop.pdf"
+  svg="${base}.svg"
+  pdfcrop "$base"
+  pdf2svg "$cropped" "$svg"
+  rm "$file"
+  rm "$cropped"
+done
+popd
+
 echo 'Running asciidoc'
 asciidoctor \
   --backend html5 \

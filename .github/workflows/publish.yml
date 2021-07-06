@@ -24,6 +24,7 @@ jobs:
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
+      - uses: xu-cheng/texlive-action/full@v1
 
       - name: Cache
         uses: actions/cache@v2
@@ -56,6 +57,9 @@ jobs:
 
       - name: Install asciidoctor
         run: sudo apt-get install asciidoctor
+
+      - name: Install pdf2svg
+        run: sudo apt-get install pdf2svg
 
       - name: Create documentation
         run: ./build.sh
