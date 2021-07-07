@@ -151,17 +151,17 @@ pqPrime =
         # fontSize (local 0.5),
       alignedText 0 1 "$\\mathbf{p}_1$"
         # translateX (1 + 0.2)
-        # translateY (83.0/30.0 - 0.2)
+        # translateY (83.0 / 30.0 - 0.2)
         # fontSize (local 0.5),
       alignedText 1 1 "$\\mathbf{q}_1$"
         # translateX (5 - 0.2)
-        # translateY (99.0/30.0 - 0.2)
+        # translateY (99.0 / 30.0 - 0.2)
         # fontSize (local 0.5),
       -- region
       fromVertices
         [ p2 (1, 1),
-          p2 (1, 83.0/30.0),
-          p2 (5, 99.0/30.0),
+          p2 (1, 83.0 / 30.0),
+          p2 (5, 99.0 / 30.0),
           p2 (5, 1),
           p2 (1, 1)
         ]
