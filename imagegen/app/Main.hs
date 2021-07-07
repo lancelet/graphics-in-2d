@@ -1,6 +1,6 @@
 module Main where
 
-import AnalyticAntialias (lineSegDefinition, test)
+import AnalyticAntialias (lineSegDefinition)
 import Diagrams.Backend.PGF
 import Diagrams.Prelude
 

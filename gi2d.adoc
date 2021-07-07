@@ -13,17 +13,17 @@ Jonathan Merritt
 == Area Below a Line Segment
 
 The area below a line segment can be used as part of a larger algorithm to find
-the coverage of a pixel by a polygon. This section covers a fast, simple
-algorithm for computing the area. It is suitable for implementation in graphics
-hardware.
+the fraction of each pixel covered by a polygon. This section describes a fast,
+simple algorithm for computing the area. It is suitable for implementation in
+graphics hardware.
 
-When devising an algorithm for this task, one problem to be faced early is the
+When devising an algorithm for this task, one problem that appears early is the
 proliferation of configurations of the line segment and rectangle. When we
-consider the intersection between rectange edges and the line, and the regions
-in which the line starts and finishes, there are tens of possible
-configurations. Consequently, we start by conditioning the line segment in such
-a way that the number of possible cases are reduced to a handful that can be
-considered in a more tractable way.
+consider all the ways the line can be drawn relative to the rectangle, and all
+the resulting intersections, there are tens of possible configurations. This is
+too many to begin analysing. Consequently, we start by conditioning the line
+segment in such a way that the number of possible cases are reduced to just a
+handful, so that they are more tractable to consider.
 
 First, the line segment will be defined by end points stem:[\mathbf{p} = (p_x,
 p_y)] and stem:[\mathbf{q} = (q_x, q_y)], such that stem:[p_x < q_x] (strictly
