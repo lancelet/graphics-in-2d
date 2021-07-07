@@ -2,17 +2,36 @@
 Jonathan Merritt
 :stem: latexmath
 
-Test SVG image:
+++++
+<style>
+  .imageblock > .title {
+    text-align: inherit;
+  }
+</style>
+++++
 
-image::img/square.svg[Static,400]
+== Area Below a Line Segment
 
-Test equation for stem:[x] and stem:[y]:
+The area below a line segment can be used as part of a larger algorithm to find
+the coverage of a pixel by a polygon. This section covers a fast, simple
+algorithm for computing the area. It is suitable for implementation in graphics
+hardware.
 
-stem:[y = mx + c]
+When devising an algorithm for this task, one problem to be faced early is the
+proliferation of configurations of the line segment and rectangle. When we
+consider the intersection between rectange edges and the line, and the regions
+in which the line starts and finishes, there are tens of possible
+configurations. Consequently, we start by conditioning the line segment in such
+a way that the number of possible cases are reduced to a handful that can be
+considered in a more tractable way.
 
-== Area Below a Line Segment Inside a Rectangle
+First, the line segment will be defined by end points stem:[\mathbf{p} = (p_x,
+p_y)] and stem:[\mathbf{q} = (q_x, q_y)], such that stem:[p_x < q_x] (strictly
+less than). If stem:[p_x = q_x] then the line segment has no projected area and
+can be discarded. The rectangle shall be aligned with Cartesian axies, extending
+from stem:[u_0] to stem:[u_1] along the stem:[x]-axis, and from stem:[v_0] to
+stem:[v_1] along the stem:[y]-axis.
 
-Part of computing an antialiased polygon fill is computing the area below a line
-segment that intersects with a rectangle. (The rectangle in question is a pixel,
-and the line segment is part of a tessellated polygon, to be rendered using a
-Jordan curve approach.)
+[#line-seg-definition]
+.A line segment definition and the desired "area beneath" it in the rectangle.
+image::img/lineSegDefinition.svg[Line Segment,300,align="center"]
