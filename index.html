@@ -476,7 +476,7 @@ handful, so that they are more tractable to consider.</p>
 <p>First, the line segment will be defined by end points \(\mathbf{p} = (p_x,
 p_y)\) and \(\mathbf{q} = (q_x, q_y)\), such that \(p_x &lt; q_x\) (strictly
 less than). If \(p_x = q_x\) then the line segment has no projected area and
-can be discarded. The rectangle shall be aligned with Cartesian axies, extending
+can be discarded. The rectangle shall be aligned with Cartesian axes, extending
 from \(u_0\) to \(u_1\) along the \(x\)-axis, and from \(v_0\) to
 \(v_1\) along the \(y\)-axis.</p>
 </div>
@@ -486,12 +486,57 @@ from \(u_0\) to \(u_1\) along the \(x\)-axis, and from \(v_0\) to
 </div>
 <div class="title">Figure 1. A line segment definition and the desired "area beneath" it in the rectangle.</div>
 </div>
+<div class="paragraph">
+<p>After ordering the ends according to their \(x\) coordinates, we can define
+the gradient of the line, \(m\):</p>
+</div>
+<div class="stemblock">
+<div class="content">
+\[m = \frac{q_y - p_y}{q_x - p_x}\]
+</div>
+</div>
+<div class="paragraph">
+<p>Next trim the line segment to the vertical lines at \(u_0\) and \(u_1\),
+producing points \(\mathbf{p}_1\) and \(\mathbf{q}_1\).</p>
+</div>
+<div class="stemblock">
+<div class="content">
+\[\begin{align}
+  \mathbf{p}_1 &amp;=
+    \begin{cases}
+      \displaystyle\mathbf{p}, &amp; \text{if } p_x \geq u_0 \\
+      \displaystyle\left(
+        u_0,
+        m\left(u_0 - p_x\right) + p_y
+      \right)&amp; \text{otherwise}
+    \end{cases}\\
+  \mathbf{q}_1 &amp;=
+    \begin{cases}
+      \displaystyle\mathbf{q}, &amp; \text{if } q_x \leq u_1 \\
+      \displaystyle\left(
+        u_1,
+        m\left(u_1 - p_x\right) + p_y
+      \right)&amp; \text{otherwise}
+    \end{cases}
+\end{align}\]
+</div>
+</div>
+<div class="paragraph">
+<p>Another example line segment with the trimming to \(\mathbf{p}_1\) and
+\(\mathbf{q}_1\) is shown below.</p>
+</div>
+<div id="pq-prime" class="imageblock text-center">
+<div class="content">
+<img src="img/pqPrime.svg" alt="Trimmed Segment" width="300">
+</div>
+<div class="title">Figure 2. Trimming the line segment to the rectangle vertically.</div>
+</div>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2021-07-07 08:50:50 UTC
+Last updated 2021-07-07 10:10:21 UTC
 </div>
 </div>
 <script type="text/x-mathjax-config">
