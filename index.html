@@ -447,37 +447,51 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div id="content">
 <div id="preamble">
 <div class="sectionbody">
-<div class="paragraph">
-<p>Test SVG image:</p>
-</div>
-<div class="imageblock">
-<div class="content">
-<img src="img/square.svg" alt="Static" width="400">
-</div>
-</div>
-<div class="paragraph">
-<p>Test equation for \(x\) and \(y\):</p>
-</div>
-<div class="paragraph">
-<p>\(y = mx + c\)</p>
-</div>
+<style>
+  .imageblock > .title {
+    text-align: inherit;
+  }
+</style>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_area_below_a_line_segment_inside_a_rectangle">Area Below a Line Segment Inside a Rectangle</h2>
+<h2 id="_area_below_a_line_segment">Area Below a Line Segment</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>Part of computing an antialiased polygon fill is computing the area below a line
-segment that intersects with a rectangle. (The rectangle in question is a pixel,
-and the line segment is part of a tessellated polygon, to be rendered using a
-Jordan curve approach.)</p>
+<p>The area below a line segment can be used as part of a larger algorithm to find
+the fraction of each pixel covered by a polygon. This section describes a fast,
+simple algorithm for computing the area. It is suitable for implementation in
+graphics hardware.</p>
+</div>
+<div class="paragraph">
+<p>When devising an algorithm for this task, one problem that appears early is the
+proliferation of configurations of the line segment and rectangle. When we
+consider all the ways the line can be drawn relative to the rectangle, and all
+the resulting intersections, there are tens of possible configurations. This is
+too many to begin analysing. Consequently, we start by conditioning the line
+segment in such a way that the number of possible cases are reduced to just a
+handful, so that they are more tractable to consider.</p>
+</div>
+<div class="paragraph">
+<p>First, the line segment will be defined by end points \(\mathbf{p} = (p_x,
+p_y)\) and \(\mathbf{q} = (q_x, q_y)\), such that \(p_x &lt; q_x\) (strictly
+less than). If \(p_x = q_x\) then the line segment has no projected area and
+can be discarded. The rectangle shall be aligned with Cartesian axies, extending
+from \(u_0\) to \(u_1\) along the \(x\)-axis, and from \(v_0\) to
+\(v_1\) along the \(y\)-axis.</p>
+</div>
+<div id="line-seg-definition" class="imageblock text-center">
+<div class="content">
+<img src="img/lineSegDefinition.svg" alt="Line Segment" width="300">
+</div>
+<div class="title">Figure 1. A line segment definition and the desired "area beneath" it in the rectangle.</div>
 </div>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2021-07-06 12:04:50 UTC
+Last updated 2021-07-07 08:50:50 UTC
 </div>
 </div>
 <script type="text/x-mathjax-config">
