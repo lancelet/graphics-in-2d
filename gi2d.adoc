@@ -12,10 +12,11 @@ Jonathan Merritt
 
 == Area Below a Line Segment
 
-The area below a line segment can be used as part of a larger algorithm to find
-the fraction of each pixel covered by a polygon. This section describes a fast,
-simple algorithm for computing the area. It is suitable for implementation in
-graphics hardware.
+The area below a line segment that intersects with a rectangle can be used as
+part of a larger algorithm to find the fraction of a pixel covered by a polygon.
+This will be used for computing a stencil in a classic stencil-and-cover
+rendering approach. This section describes a fast, simple algorithm for
+computing the area. It is suitable for implementation in graphics hardware.
 
 When devising an algorithm for this task, one problem that appears early is the
 proliferation of configurations of the line segment and rectangle. When we
@@ -28,9 +29,10 @@ handful, so that they are more tractable to consider.
 First, the line segment will be defined by end points stem:[\mathbf{p} = (p_x,
 p_y)] and stem:[\mathbf{q} = (q_x, q_y)], such that stem:[p_x < q_x] (strictly
 less than). If stem:[p_x = q_x] then the line segment has no projected area and
-can be discarded. The rectangle shall be aligned with Cartesian axes, extending
-from stem:[u_0] to stem:[u_1] along the stem:[x]-axis, and from stem:[v_0] to
-stem:[v_1] along the stem:[y]-axis.
+can be discarded; alternatively it can proceed through the rest of this
+processing with the ordering of points having no impact. The rectangle shall be
+aligned with Cartesian axes, extending from stem:[u_0] to stem:[u_1] along the
+stem:[x]-axis, and from stem:[v_0] to stem:[v_1] along the stem:[y]-axis.
 
 [#line-seg-definition]
 .A line segment definition and the desired "area beneath" it in the rectangle.
@@ -45,13 +47,19 @@ m = \frac{q_y - p_y}{q_x - p_x}
 ++++
 
 Next trim the line segment to the vertical lines at stem:[u_0] and stem:[u_1],
-producing points stem:[\mathbf{p}_1] and stem:[\mathbf{q}_1].
+producing points stem:[\mathbf{p}_1] and stem:[\mathbf{q}_1]. If the line
+segment lies completely to the left or right of the rectangle, then both points
+are placed at the special coordinates stem:[(u_0, v_0)]. Alternatively, the line
+segment may be discarded in these cases. If the line segment does not cross the
+rectangle boundaries then no trimming is necessary.
 
 [stem]
 ++++
 \begin{align}
   \mathbf{p}_1 &=
     \begin{cases}
+      \displaystyle(u_0, v_0), &
+        \text{if } p_x \geq u_1 \text{ or } q_x \leq u_0 \\
       \displaystyle\mathbf{p}, & \text{if } p_x \geq u_0 \\
       \displaystyle\left(
         u_0,
@@ -60,6 +68,8 @@ producing points stem:[\mathbf{p}_1] and stem:[\mathbf{q}_1].
     \end{cases}\\
   \mathbf{q}_1 &=
     \begin{cases}
+      \displaystyle(u_0, v_0), &
+        \text{if } p_x \geq u_1 \text{ or } q_x \leq u_0 \\
       \displaystyle\mathbf{q}, & \text{if } q_x \leq u_1 \\
       \displaystyle\left(
         u_1,
@@ -69,9 +79,48 @@ producing points stem:[\mathbf{p}_1] and stem:[\mathbf{q}_1].
 \end{align}
 ++++
 
-Another example line segment with the trimming to stem:[\mathbf{p}_1] and
-stem:[\mathbf{q}_1] is shown below.
+A line segment that spans a rectangle from left to right is shown below, with
+the corresponding trimming to stem:[\mathbf{p}_1] and stem:[\mathbf{q}_1].
 
-[#pq-prime]
+[#trim-vertical]
 .Trimming the line segment to the rectangle vertically.
-image::img/pqPrime.svg[Trimmed Segment,300,align="center"]
+image::img/trimVertical.svg[Trimmed Segment,300,align="center"]
+
+Next, we sort the points according to their stem:[y] coordinates, and define
+points stem:[\mathbf{a} = (a_x, a_y)] and stem:[\mathbf{b} = (b_x, b_y)], such
+that stem:[a_y \leq b_y]:
+
+[stem]
+++++
+(\mathbf{a}, \mathbf{b}) =
+  \begin{cases}
+    (\mathbf{p}_1, \mathbf{q}_1), & \text{if } p_{1y} < q_{1y} \\
+    (\mathbf{q}_1, \mathbf{p}_1) & \text{otherwise}
+  \end{cases}
+++++
+
+Following this, we trim the line segment horizontally to the bottom of the
+rectangle, at stem:[v_0], to produce point stem:[\mathbf{a}_1]. Again, if the
+segment does not cross the bottom border then no trimming is necessary. If the
+line segment lies completely below the rectangle then it can either be discarded
+or stem:[\mathbf{a}_1] is placed at stem:[\mathbf{b}].
+
+[stem]
+++++
+\mathbf{a}_1 =
+  \begin{cases}
+    \displaystyle\mathbf{b}, & \text{if } b_y \leq v_0 \\
+    \displaystyle\mathbf{a}, & \text{if } a_y \geq v_0 \\
+    \displaystyle\left(
+      \frac{v_0 - p_{1y}}{m} + p_{1x}, v_0
+    \right) & \text{otherwise}
+  \end{cases}
+++++
+
+Another example line segment is shown below with points stem:[\mathbf{a}_1],
+stem:[\mathbf{a}], stem:[\mathbf{b}], stem:[\mathbf{p}_1] and
+stem:[\mathbf{q}_1] labelled.
+
+[#trim-horizontal]
+.Trimming the line segment to the lower edge of the rectangle.
+image::img/trimHorizontal.svg[Trimmed Segment,300,align="center"]

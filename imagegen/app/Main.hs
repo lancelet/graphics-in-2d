@@ -1,6 +1,6 @@
 module Main where
 
-import AnalyticAntialias (lineSegDefinition, pqPrime)
+import AnalyticAntialias (lineSegDefinition, trimHorizontal, trimVertical)
 import Diagrams.Backend.PGF
 import Diagrams.Prelude
 
@@ -12,6 +12,10 @@ main = do
     (dims (V2 400 400))
     lineSegDefinition
   renderPGF
-    "../doc/img/pqPrime.pdf"
+    "../doc/img/trimVertical.pdf"
     (dims (V2 400 400))
-    pqPrime
+    trimVertical
+  renderPGF
+    "../doc/img/trimHorizontal.pdf"
+    (dims (V2 400 400))
+    trimHorizontal
