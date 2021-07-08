@@ -458,10 +458,11 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <h2 id="_area_below_a_line_segment">Area Below a Line Segment</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>The area below a line segment can be used as part of a larger algorithm to find
-the fraction of each pixel covered by a polygon. This section describes a fast,
-simple algorithm for computing the area. It is suitable for implementation in
-graphics hardware.</p>
+<p>The area below a line segment that intersects with a rectangle can be used as
+part of a larger algorithm to find the fraction of a pixel covered by a polygon.
+This will be used for computing a stencil in a classic stencil-and-cover
+rendering approach. This section describes a fast, simple algorithm for
+computing the area. It is suitable for implementation in graphics hardware.</p>
 </div>
 <div class="paragraph">
 <p>When devising an algorithm for this task, one problem that appears early is the
@@ -476,9 +477,10 @@ handful, so that they are more tractable to consider.</p>
 <p>First, the line segment will be defined by end points \(\mathbf{p} = (p_x,
 p_y)\) and \(\mathbf{q} = (q_x, q_y)\), such that \(p_x &lt; q_x\) (strictly
 less than). If \(p_x = q_x\) then the line segment has no projected area and
-can be discarded. The rectangle shall be aligned with Cartesian axes, extending
-from \(u_0\) to \(u_1\) along the \(x\)-axis, and from \(v_0\) to
-\(v_1\) along the \(y\)-axis.</p>
+can be discarded; alternatively it can proceed through the rest of this
+processing with the ordering of points having no impact. The rectangle shall be
+aligned with Cartesian axes, extending from \(u_0\) to \(u_1\) along the
+\(x\)-axis, and from \(v_0\) to \(v_1\) along the \(y\)-axis.</p>
 </div>
 <div id="line-seg-definition" class="imageblock text-center">
 <div class="content">
@@ -497,13 +499,19 @@ the gradient of the line, \(m\):</p>
 </div>
 <div class="paragraph">
 <p>Next trim the line segment to the vertical lines at \(u_0\) and \(u_1\),
-producing points \(\mathbf{p}_1\) and \(\mathbf{q}_1\).</p>
+producing points \(\mathbf{p}_1\) and \(\mathbf{q}_1\). If the line
+segment lies completely to the left or right of the rectangle, then both points
+are placed at the special coordinates \((u_0, v_0)\). Alternatively, the line
+segment may be discarded in these cases. If the line segment does not cross the
+rectangle boundaries then no trimming is necessary.</p>
 </div>
 <div class="stemblock">
 <div class="content">
 \[\begin{align}
   \mathbf{p}_1 &amp;=
     \begin{cases}
+      \displaystyle(u_0, v_0), &amp;
+        \text{if } p_x \geq u_1 \text{ or } q_x \leq u_0 \\
       \displaystyle\mathbf{p}, &amp; \text{if } p_x \geq u_0 \\
       \displaystyle\left(
         u_0,
@@ -512,6 +520,8 @@ producing points \(\mathbf{p}_1\) and \(\mathbf{q}_1\).</p>
     \end{cases}\\
   \mathbf{q}_1 &amp;=
     \begin{cases}
+      \displaystyle(u_0, v_0), &amp;
+        \text{if } p_x \geq u_1 \text{ or } q_x \leq u_0 \\
       \displaystyle\mathbf{q}, &amp; \text{if } q_x \leq u_1 \\
       \displaystyle\left(
         u_1,
@@ -522,21 +532,65 @@ producing points \(\mathbf{p}_1\) and \(\mathbf{q}_1\).</p>
 </div>
 </div>
 <div class="paragraph">
-<p>Another example line segment with the trimming to \(\mathbf{p}_1\) and
-\(\mathbf{q}_1\) is shown below.</p>
+<p>A line segment that spans a rectangle from left to right is shown below, with
+the corresponding trimming to \(\mathbf{p}_1\) and \(\mathbf{q}_1\).</p>
 </div>
-<div id="pq-prime" class="imageblock text-center">
+<div id="trim-vertical" class="imageblock text-center">
 <div class="content">
-<img src="img/pqPrime.svg" alt="Trimmed Segment" width="300">
+<img src="img/trimVertical.svg" alt="Trimmed Segment" width="300">
 </div>
 <div class="title">Figure 2. Trimming the line segment to the rectangle vertically.</div>
+</div>
+<div class="paragraph">
+<p>Next, we sort the points according to their \(y\) coordinates, and define
+points \(\mathbf{a} = (a_x, a_y)\) and \(\mathbf{b} = (b_x, b_y)\), such
+that \(a_y \leq b_y\):</p>
+</div>
+<div class="stemblock">
+<div class="content">
+\[(\mathbf{a}, \mathbf{b}) =
+  \begin{cases}
+    (\mathbf{p}_1, \mathbf{q}_1), &amp; \text{if } p_{1y} &lt; q_{1y} \\
+    (\mathbf{q}_1, \mathbf{p}_1) &amp; \text{otherwise}
+  \end{cases}\]
+</div>
+</div>
+<div class="paragraph">
+<p>Following this, we trim the line segment horizontally to the bottom of the
+rectangle, at \(v_0\), to produce point \(\mathbf{a}_1\). Again, if the
+segment does not cross the bottom border then no trimming is necessary. If the
+line segment lies completely below the rectangle then it can either be discarded
+or \(\mathbf{a}_1\) is placed at \(\mathbf{b}\).</p>
+</div>
+<div class="stemblock">
+<div class="content">
+\[\mathbf{a}_1 =
+  \begin{cases}
+    \displaystyle\mathbf{b}, &amp; \text{if } b_y \leq v_0 \\
+    \displaystyle\mathbf{a}, &amp; \text{if } a_y \geq v_0 \\
+    \displaystyle\left(
+      \frac{v_0 - p_{1y}}{m} + p_{1x}, v_0
+    \right) &amp; \text{otherwise}
+  \end{cases}\]
+</div>
+</div>
+<div class="paragraph">
+<p>Another example line segment is shown below with points \(\mathbf{a}_1\),
+\(\mathbf{a}\), \(\mathbf{b}\), \(\mathbf{p}_1\) and
+\(\mathbf{q}_1\) labelled.</p>
+</div>
+<div id="trim-horizontal" class="imageblock text-center">
+<div class="content">
+<img src="img/trimHorizontal.svg" alt="Trimmed Segment" width="300">
+</div>
+<div class="title">Figure 3. Trimming the line segment to the lower edge of the rectangle.</div>
 </div>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2021-07-07 10:10:21 UTC
+Last updated 2021-07-08 11:07:56 UTC
 </div>
 </div>
 <script type="text/x-mathjax-config">
