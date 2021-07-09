@@ -447,6 +447,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div id="content">
 <div id="preamble">
 <div class="sectionbody">
+<script src="js/demo-line-rect.js"></script>
 <style>
   .imageblock > .title {
     text-align: inherit;
@@ -567,6 +568,9 @@ or \(\mathbf{a}_1\) is placed at \(\mathbf{b}\).</p>
 \[\mathbf{a}_1 =
   \begin{cases}
     \displaystyle\mathbf{b}, &amp; \text{if } b_y \leq v_0 \\
+    \displaystyle\left(
+      a_x, v_1
+    \right), &amp; \text{if } a_y \geq v_1 \\
     \displaystyle\mathbf{a}, &amp; \text{if } a_y \geq v_0 \\
     \displaystyle\left(
       \frac{v_0 - p_{1y}}{m} + p_{1x}, v_0
@@ -585,12 +589,43 @@ or \(\mathbf{a}_1\) is placed at \(\mathbf{b}\).</p>
 </div>
 <div class="title">Figure 3. Trimming the line segment to the lower edge of the rectangle.</div>
 </div>
+<div class="paragraph">
+<p>Then we trim the line segment to the top of the rectangle at \(v_1\),
+producing point \(\mathbf{b}_1\).</p>
+</div>
+<div class="stemblock">
+<div class="content">
+\[\mathbf{b}_1 =
+  \begin{cases}
+    \displaystyle\mathbf{b}, &amp; \text{if } b_y \leq v_1 \\
+    \displaystyle\left(
+      \frac{v_1 - p_{1y}}{m} + p_{1x}, v_1
+    \right) &amp; \text{otherwise}
+  \end{cases}\]
+</div>
+</div>
+<div class="paragraph">
+<p>The final point to be generated is \(\mathbf{g}\), defined as follows:</p>
+</div>
+<div class="stemblock">
+<div class="content">
+\[\mathbf{g} =
+  \left(
+    b_x, v_1
+  \right)\]
+</div>
+</div>
+<center>
+<canvas id="demo-line-rect" width="400" height="400">
+  JavaScript example of line-rectangle area-beneath computation.
+</canvas>
+</center>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2021-07-08 11:07:56 UTC
+Last updated 2021-07-09 10:38:55 UTC
 </div>
 </div>
 <script type="text/x-mathjax-config">
