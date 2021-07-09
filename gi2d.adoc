@@ -3,6 +3,7 @@ Jonathan Merritt
 :stem: latexmath
 
 ++++
+<script src="js/demo-line-rect.js"></script>
 <style>
   .imageblock > .title {
     text-align: inherit;
@@ -110,6 +111,9 @@ or stem:[\mathbf{a}_1] is placed at stem:[\mathbf{b}].
 \mathbf{a}_1 =
   \begin{cases}
     \displaystyle\mathbf{b}, & \text{if } b_y \leq v_0 \\
+    \displaystyle\left(
+      a_x, v_1
+    \right), & \text{if } a_y \geq v_1 \\
     \displaystyle\mathbf{a}, & \text{if } a_y \geq v_0 \\
     \displaystyle\left(
       \frac{v_0 - p_{1y}}{m} + p_{1x}, v_0
@@ -124,3 +128,35 @@ stem:[\mathbf{q}_1] labelled.
 [#trim-horizontal]
 .Trimming the line segment to the lower edge of the rectangle.
 image::img/trimHorizontal.svg[Trimmed Segment,300,align="center"]
+
+Then we trim the line segment to the top of the rectangle at stem:[v_1],
+producing point stem:[\mathbf{b}_1].
+
+[stem]
+++++
+\mathbf{b}_1 =
+  \begin{cases}
+    \displaystyle\mathbf{b}, & \text{if } b_y \leq v_1 \\
+    \displaystyle\left(
+      \frac{v_1 - p_{1y}}{m} + p_{1x}, v_1
+    \right) & \text{otherwise}
+  \end{cases}
+++++
+
+The final point to be generated is stem:[\mathbf{g}], defined as follows:
+
+[stem]
+++++
+\mathbf{g} =
+  \left(
+    b_x, v_1
+  \right)
+++++
+
+++++
+<center>
+<canvas id="demo-line-rect" width="400" height="400">
+  JavaScript example of line-rectangle area-beneath computation.
+</canvas>
+</center>
+++++

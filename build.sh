@@ -7,6 +7,9 @@ cd "$script_dir"
 echo 'Creating required directories'
 mkdir -p doc/img
 
+echo 'Copying static JavaScript content'
+cp -r js doc/.
+
 echo 'Building image generator and creating images'
 pushd imagegen
 cabal build
