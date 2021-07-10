@@ -470,10 +470,13 @@ computing the area. It is suitable for implementation in graphics hardware.</p>
 proliferation of configurations of the line segment and rectangle. When we
 consider all the ways the line can be drawn relative to the rectangle, and all
 the resulting intersections, there are tens of possible configurations. This is
-too many to begin analysing. Consequently, we start by conditioning the line
-segment in such a way that the number of possible cases are reduced to just a
-handful, so that they are more tractable to consider.</p>
+too many to begin analysing. Consequently, the approach we take here involves
+conditioning the line segment at each step, so that we reduce the number of
+possible cases. Ultimately just a few possibilities exist at each stage, making
+the analysis tractable.</p>
 </div>
+<div class="sect2">
+<h3 id="_mathematical_outline">Mathematical Outline</h3>
 <div class="paragraph">
 <p>First, the line segment will be defined by end points \(\mathbf{p} = (p_x,
 p_y)\) and \(\mathbf{q} = (q_x, q_y)\), such that \(p_x &lt; q_x\) (strictly
@@ -590,13 +593,15 @@ or \(\mathbf{a}_1\) is placed at \(\mathbf{b}\).</p>
 <div class="title">Figure 3. Trimming the line segment to the lower edge of the rectangle.</div>
 </div>
 <div class="paragraph">
-<p>Then we trim the line segment to the top of the rectangle at \(v_1\),
-producing point \(\mathbf{b}_1\).</p>
+<p>Then we intersect (but don&#8217;t trim) the line segment to the top of the rectangle
+at \(v_1\), producing point \(\mathbf{b}_1\). If the line segment lies
+completely above the rectangle then \(\mathbf{b}_1 = (a_{1x}, v_1)\).</p>
 </div>
 <div class="stemblock">
 <div class="content">
 \[\mathbf{b}_1 =
   \begin{cases}
+    \displaystyle\left(a_{1x}, v_1\right) &amp; \text{if } a_{1y} \geq v_1 \\
     \displaystyle\mathbf{b}, &amp; \text{if } b_y \leq v_1 \\
     \displaystyle\left(
       \frac{v_1 - p_{1y}}{m} + p_{1x}, v_1
@@ -605,7 +610,8 @@ producing point \(\mathbf{b}_1\).</p>
 </div>
 </div>
 <div class="paragraph">
-<p>The final point to be generated is \(\mathbf{g}\), defined as follows:</p>
+<p>The final point to be generated is \(\mathbf{g}\), found by projecting
+\(\mathbf{b}\) downward or upward to the top of the rectangle at \(v_1\).</p>
 </div>
 <div class="stemblock">
 <div class="content">
@@ -615,17 +621,93 @@ producing point \(\mathbf{b}_1\).</p>
   \right)\]
 </div>
 </div>
+<div class="paragraph">
+<p>These points are shown in an interactive diagram below. The points at the ends
+of the line can be dragged to visualize the computed area.</p>
+</div>
 <center>
 <canvas id="demo-line-rect" width="400" height="400">
   JavaScript example of line-rectangle area-beneath computation.
 </canvas>
 </center>
+<div class="paragraph">
+<p>After computing the points, the desired area is given by:</p>
+</div>
+<div class="stemblock">
+<div class="content">
+\[A =
+  \frac{1}{2}(a_{1y} + b_{1y})|a_{1x} - b_{1x}| +
+    (v_1 - v_0)|g_{x} - b_{1x}|\]
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_branchless_algorithm">Branchless Algorithm</h3>
+<div class="paragraph">
+<p>The steps above can be expressed in a static-single-assignment, branchless
+algorithm for the area as follows:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code>rectAreaBelow(px, py, qx, qy, u0, u1, v0, v1):
+  -- gradient --
+  m := (qy - py) / (qx - px)
+
+  -- p1, q1 --
+  -- branch factors
+  b1 := min((px &gt;= u1) + (qx &lt;= u0), 1)
+  b2 := (px &gt;= u0)
+  b3 := 1 - min(b1 + b2, 1)
+  b4 := (qx &lt;= u1)
+  b5 := 1 - min(b1 + b4, 1)
+  -- values
+  p1x := (b1 + b3) * u0 + b2 * px
+  p1y := b1 * v0 + b2 * py + b3 * (m * (u0 - px) + py)
+  q1x := b1 * u0 + b4 * qx + b5 * u1
+  q1y := b1 * v0 + b4 * qy + b5 * (m * (u1 - py) + py)
+
+  -- a, b --
+  -- branch factors
+  b6 := (p1y &lt; q1y)
+  b7 := 1 - b6
+  -- values
+  ax := b6 * p1x + b7 * q1x
+  ay := b6 * p1y + b7 * q1y
+  bx := b6 * q1x + b7 * p1x
+  by := b6 * q1y + b7 * p1y
+
+  -- a1 --
+  -- branch factors
+  b8  := (by &lt;= v0)
+  b9  := (ay &gt;= v1)
+  b10 := (ay &gt;= v0)
+  b11 := 1 - min(b8 + b9 + b10, 1)
+  -- values
+  a1x := b8 * bx + (b9 + b10) * ax + b11 * ((v0 - p1y) / m + p1x)
+  a1y := b8 * by + b9 * v1 + b10 * ay + b11 * v0
+
+  -- b1 --
+  -- branch factors
+  b12 := (a1y &gt;= v1)
+  b13 := (by &lt;= v1)
+  b14 := 1 - min(b12 + b13, 1)
+  -- values
+  b1x := b12 * a1x + b13 * bx + b14 * ((v1 - p1y) / m + p1x)
+  b1y := b12 * v1 + b13 * by + b14 * v1
+
+  -- area --
+  area := 0.5 * (a1y + b1y) * abs(a1x - b1x) + (v1 - v0) * abs(bx - b1x)
+
+  return area</code></pre>
+</div>
+</div>
+</div>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2021-07-09 10:38:55 UTC
+Last updated 2021-07-10 08:26:37 UTC
 </div>
 </div>
 <script type="text/x-mathjax-config">
