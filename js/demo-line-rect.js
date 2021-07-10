@@ -70,6 +70,11 @@ function drawUnchecked(canvas) {
     //-------------------------------------------------------------------------
 
     // compute the intersected area in the rectangle
+    //
+    let u_0 = 0.0;
+    let u_1 = 1.0;
+    let v_0 = 0.0;
+    let v_1 = 1.0;
 
     let pc = (state.pt1.x < state.pt2.x) ? state.pt1 : state.pt2;
     let qc = (state.pt1.x < state.pt2.x) ? state.pt2 : state.pt1;
@@ -79,21 +84,21 @@ function drawUnchecked(canvas) {
     let m = (q.y - p.y) / (q.x - p.x);
 
     let p1 = null;
-    if (p.x >= 1 || q.x <= 0) {
-        p1 = {x: 0, y: 0};
-    } else if (p.x >= 0) {
+    if (p.x >= u_1 || q.x <= u_0) {
+        p1 = {x: u_0, y: v_0};
+    } else if (p.x >= u_0) {
         p1 = p;
     } else {
-        p1 = {x: 0, y: m * (-p.x) + p.y};
+        p1 = {x: u_0, y: m * (u_0 - p.x) + p.y};
     }
 
     let q1 = null;
-    if (p.x >= 1 || q.x <= 0) {
-        q1 = {x: 0, y: 0};
-    } else if (q.x <= 1) {
+    if (p.x >= u_1 || q.x <= u_0) {
+        q1 = {x: u_0, y: v_0};
+    } else if (q.x <= u_1) {
         q1 = q;
     } else {
-        q1 = {x: 1, y: m * (1-p.x) + p.y};
+        q1 = {x: u_1, y: m * (u_1 - p.x) + p.y};
     }
 
     let a = null;
@@ -107,21 +112,23 @@ function drawUnchecked(canvas) {
     }
 
     let a1 = null;
-    if (b.y <= 0) {
+    if (b.y <= v_0) {
         a1 = {x: b.x, y: b.y};
-    } else if (a.y >= 1) {
-        a1 = {x: a.x, y: 1};
-    } else if (a.y >= 0) {
+    } else if (a.y >= v_1) {
+        a1 = {x: a.x, y: v_1};
+    } else if (a.y >= v_0) {
         a1 = {x: a.x, y: a.y};
     } else {
-        a1 = {x: (-p1.y) / m + p1.x, y: 0};
+        a1 = {x: (v_0 - p1.y) / m + p1.x, y: v_0};
     }
 
     let b1 = null;
-    if (b.y <= 1 || a.y >= 1) {
-        b1 = {x: b.x, y: Math.min(b.y, 1)};
+    if (a1.y >= v_1) {
+        b1 = {x: a1.x, y: v_1};
+    } else if (b.y <= v_1) {
+        b1 = {x: b.x, y: b.y};
     } else {
-        b1 = {x: (1 - p1.y)/m + p1.x, y: 1};
+        b1 = {x: (v_1 - p1.y) / m + p1.x, y: v_1};
     }
 
     let g = {x: b.x, y: 1};
