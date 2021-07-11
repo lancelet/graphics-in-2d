@@ -1,5 +1,5 @@
 let state = {
-    pt1: {x: 50, y: 100},
+    pt1: {x: 75, y: 100},
     pt2: {x: 150, y: 200},
     mouse: {x: 0, y: 0},
     dragging: null,
@@ -16,13 +16,27 @@ let config = {
     lrPixMargin: 100,
     tbPixMargin: 100,
     rectWidth: 2,
-    lineWidth: 1.5
+    lineWidth: 1.5,
+    font: "21px STIXGeneral",
+    subscriptFont: "14px STIXGeneral",
+    fontOffset: 20,
+    subscriptOffset: 6
+}
+
+let drawConfig = {
+    draw_p: true,
+    draw_q: true,
+    draw_p1: false,
+    draw_q1: false,
+    draw_a: true,
+    draw_b: true,
+    draw_a1: true,
 }
 
 function draw() {
     let canvas = document.getElementById('demo-line-rect');
     if (canvas.getContext) {
-        drawUnchecked(canvas);
+        drawUnchecked(canvas, drawConfig);
     }
 }
 
@@ -33,7 +47,7 @@ function ptClose(pt1, pt2, d) {
     return d2 <= (d * d);
 }
 
-function drawUnchecked(canvas) {
+function drawUnchecked(canvas, dc) {
     let ctx = canvas.getContext('2d');
 
     // clear background
@@ -45,12 +59,81 @@ function drawUnchecked(canvas) {
         ctx.fillRect(0, 0, canvas.width, canvas.height);
     }
 
+    // paint axes
+    {
+        let ye = pxToCanvas({x: -0.2, y: 1.2});
+        let or = pxToCanvas({x: -0.2, y: -0.2});
+        let xe = pxToCanvas({x: 1.2, y: -0.2});
+        let l = ye.x;
+        let r = xe.x;
+        let t = ye.y;
+        let b = or.y;
+
+        let axes = new Path2D();
+        axes.moveTo(l, t);
+        axes.lineTo(l, b);
+        axes.lineTo(r, b);
+        ctx.lineWidth = 2;
+        ctx.stroke(axes);
+
+        let ar = 12;
+
+        let xarrow = new Path2D();
+        xarrow.moveTo(r-ar, b-(ar/3));
+        xarrow.lineTo(r, b);
+        xarrow.lineTo(r-ar, b+(ar/3));
+        ctx.stroke(xarrow);
+        textBelow(ctx, r, b, 'x', '', false);
+
+        let yarrow = new Path2D();
+        yarrow.moveTo(l-(ar/3), t+ar);
+        yarrow.lineTo(l, t);
+        yarrow.lineTo(l+(ar/3), t+ar);
+        ctx.stroke(yarrow);
+        textLeft(ctx, l, t, 'y', '', false);
+    }
+
+    // paint u0, u1, v0, v1
+    {
+        let u0top = pxToCanvas({x: 0, y: 0});
+        let u0bot = pxToCanvas({x: 0, y: -0.25});
+        let u1top = pxToCanvas({x: 1, y: 0});
+        let u1bot = pxToCanvas({x: 1, y: -0.25});
+        let v0lef = pxToCanvas({x: -0.25, y: 0});
+        let v0rig = pxToCanvas({x: 0, y: 0});
+        let v1lef = pxToCanvas({x: -0.25, y: 1});
+        let v1rig = pxToCanvas({x: 0, y: 1});
+        let u0line = new Path2D();
+        let u1line = new Path2D();
+        let v0line = new Path2D();
+        let v1line = new Path2D();
+        u0line.moveTo(u0top.x, u0top.y);
+        u0line.lineTo(u0bot.x, u0bot.y);
+        u1line.moveTo(u1top.x, u1top.y);
+        u1line.lineTo(u1bot.x, u1bot.y);
+        v0line.moveTo(v0lef.x, v0lef.y);
+        v0line.lineTo(v0rig.x, v0rig.y);
+        v1line.moveTo(v1lef.x, v1lef.y);
+        v1line.lineTo(v1rig.x, v1rig.y);
+        ctx.lineWidth = 1;
+        ctx.setLineDash([6, 3]);
+        ctx.stroke(u0line);
+        ctx.stroke(u1line);
+        ctx.stroke(v0line);
+        ctx.stroke(v1line);
+        textBelow(ctx, u0bot.x, u0bot.y, 'u', '0', false);
+        textBelow(ctx, u1bot.x, u1bot.y, 'u', '1', false);
+        textLeft(ctx, v0lef.x, v0lef.y, 'v', '0', false);
+        textLeft(ctx, v1lef.x, v1lef.y, 'v', '1', false);
+    }
+
     // paint the line segment
     {
         let line = new Path2D();
         line.moveTo(state.pt1.x, state.pt1.y);
         line.lineTo(state.pt2.x, state.pt2.y);
         ctx.lineWidth = 1.5;
+        ctx.setLineDash([]);
         ctx.stroke(line);
     }
 
@@ -139,6 +222,8 @@ function drawUnchecked(canvas) {
     {
         let p1c = pxToCanvas(p1);
         let q1c = pxToCanvas(q1);
+        let ac = pxToCanvas(a);
+        let bc = pxToCanvas(b);
         let a1c = pxToCanvas(a1);
         let b1c = pxToCanvas(b1);
         let gc = pxToCanvas(g);
@@ -157,11 +242,34 @@ function drawUnchecked(canvas) {
         ctx.fillStyle = 'rgb(0,0,0)';
         ctx.fill(q1Circle);
         ctx.fillStyle = 'rgb(0,0,0)';
-        ctx.fill(a1Circle);
         ctx.fillStyle = 'rgb(0,0,0)';
         ctx.fill(b1Circle);
         ctx.fillStyle = 'rgb(0,0,0)';
         ctx.fill(gCircle);
+
+        // label all the points
+        if (dc.draw_p) {
+            textBelow(ctx, pc.x, pc.y, 'p', '', true);
+        }
+        if (dc.draw_q) {
+            textBelow(ctx, qc.x, qc.y, 'q', '', true);
+        }
+        if (dc.draw_p1) {
+            textBelowRight(ctx, p1c.x, p1c.y, 'p', '1', true);
+        }
+        if (dc.draw_q1) {
+            textBelowLeft(ctx, q1c.x, q1c.y, 'q', '1', true);
+        }
+        if (dc.draw_a) {
+            textBelowRight(ctx, ac.x, ac.y, 'a', '', true);
+        }
+        if (dc.draw_b) {
+            textBelowRight(ctx, bc.x, bc.y, 'b', '', true);
+        }
+        if (dc.draw_a1) {
+            textBelowLeft(ctx, a1c.x, a1c.y, 'a', '1', true);
+            ctx.fill(a1Circle);
+        }
     }
 
     // draw the "area region"
@@ -204,6 +312,36 @@ function drawUnchecked(canvas) {
         ctx.fill(pt2Circle);
     }
 
+}
+
+function textBelow(ctx, x, y, text, subscript, bold) {
+    drawText(ctx, x, y+config.fontOffset, text, subscript, bold);
+}
+
+function textBelowRight(ctx, x, y, text, subscript, bold) {
+    drawText(ctx, x+(config.fontOffset/1.5), y+config.fontOffset, text, subscript, bold);
+}
+
+function textBelowLeft(ctx, x, y, text, subscript, bold) {
+    drawText(ctx, x-(config.fontOffset/1.1), y+config.fontOffset, text, subscript, bold);
+}
+
+function textLeft(ctx, x, y, text, subscript, bold) {
+    drawText(ctx, x-config.fontOffset, y+(config.fontOffset/2), text, subscript, bold);
+}
+
+function drawText(ctx, x, y, text, subscript, bold) {
+    ctx.fillStyle = 'rgb(0,0,0)';
+    ctx.textAlign = 'center';
+    if (bold) {
+        ctx.font = 'bold ' + config.font;
+    } else {
+        ctx.font = 'italic ' + config.font;
+    }
+    ctx.fillText(text, x, y);
+    ctx.font = config.subscriptFont;
+    ctx.textAlign = 'left';
+    ctx.fillText(subscript, x + config.subscriptOffset, y + 0.6 * config.subscriptOffset);
 }
 
 function canvasToPx(pt) {
